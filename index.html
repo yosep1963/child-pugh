@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Child-Pugh Score 계산기</title>
+    
+    <!-- PWA 매니페스트 -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- iOS Safari -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Child-Pugh">
+    <link rel="apple-touch-icon" href="icon-180x180.png">
+    
+    <!-- Android Chrome -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#667eea">
+    
+    <!-- Microsoft -->
+    <meta name="msapplication-TileColor" content="#667eea">
+    <meta name="msapplication-TileImage" content="icon-144x144.png">
+    
+    <!-- 파비콘 -->
+    <link rel="icon" type="image/png" sizes="32x32" href="icon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="icon-16x16.png">
+    
+    <!-- 스타일시트 -->
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- SEO 메타 태그 -->
+    <meta name="description" content="간경변증 환자의 중증도를 평가하는 Child-Pugh Score 계산기. 의료진을 위한 정확하고 간편한 계산 도구입니다.">
+    <meta name="keywords" content="Child-Pugh, 간경변증, 간 기능, 의료 계산기, 간질환">
+    <meta name="author" content="Medical Calculator">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="Child-Pugh Score 계산기">
+    <meta property="og:description" content="간경변증 환자의 중증도를 평가하는 Child-Pugh Score 계산기">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="icon-512x512.png">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Child-Pugh Score 계산기</h1>
+            <p class="subtitle">간경변증 환자의 중증도 평가</p>
+        </header>
+
+        <main>
+            <form id="childPughForm" class="calculator-form">
+                <div class="input-section">
+                    <h2>검사 수치 입력</h2>
+                    
+                    <!-- 빌리루빈 -->
+                    <div class="input-group">
+                        <label for="bilirubin">혈청 빌리루빈 (mg/dL)</label>
+                        <input type="number" id="bilirubin" step="0.1" min="0" placeholder="예: 2.5" required>
+                        <div class="reference">
+                            <span>참고: &lt;2 (1점), 2-3 (2점), &gt;3 (3점) · µmol/L 값은 17.1로 나누어 입력</span>
+                        </div>
+                    </div>
+
+                    <!-- 알부민 -->
+                    <div class="input-group">
+                        <label for="albumin">혈청 알부민 (g/dL)</label>
+                        <input type="number" id="albumin" step="0.1" min="0" placeholder="예: 3.2" required>
+                        <div class="reference">
+                            <span>참고: &gt;3.5 (1점), 2.8-3.5 (2점), &lt;2.8 (3점) · g/L 값은 10으로 나누어 입력</span>
+                        </div>
+                    </div>
+
+                    <!-- INR -->
+                    <div class="input-group">
+                        <label for="inr">INR</label>
+                        <input type="number" id="inr" step="0.1" min="0" placeholder="예: 1.8" required>
+                        <div class="reference">
+                            <span>참고: &lt;1.7 (1점), 1.7-2.3 (2점), &gt;2.3 (3점)</span>
+                        </div>
+                    </div>
+
+                    <!-- 복수 -->
+                    <div class="input-group">
+                        <label for="ascites">복수 (Ascites)</label>
+                        <select id="ascites" required>
+                            <option value="">선택하세요</option>
+                            <option value="1">없음 (1점)</option>
+                            <option value="2">경도 - 약물로 조절 가능 (2점)</option>
+                            <option value="3">중등도 - 약물로 조절 어려움 (3점)</option>
+                        </select>
+                    </div>
+
+                    <!-- 간성뇌증 -->
+                    <div class="input-group">
+                        <label for="encephalopathy">간성뇌증 (Hepatic Encephalopathy)</label>
+                        <select id="encephalopathy" required>
+                            <option value="">선택하세요</option>
+                            <option value="1">없음 (1점)</option>
+                            <option value="2">1-2등급 - 약물로 조절 가능 (2점)</option>
+                            <option value="3">3-4등급 - 약물로 조절 어려움 (3점)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button type="submit" class="calculate-btn">점수 계산하기</button>
+            </form>
+
+            <div id="result" class="result-section" style="display: none;">
+                <h2>계산 결과</h2>
+                <div class="score-breakdown">
+                    <div class="breakdown-item">
+                        <span class="label">빌리루빈:</span>
+                        <span id="bilirubinScore" class="score"></span>
+                    </div>
+                    <div class="breakdown-item">
+                        <span class="label">알부민:</span>
+                        <span id="albuminScore" class="score"></span>
+                    </div>
+                    <div class="breakdown-item">
+                        <span class="label">INR:</span>
+                        <span id="inrScore" class="score"></span>
+                    </div>
+                    <div class="breakdown-item">
+                        <span class="label">복수:</span>
+                        <span id="ascitesScore" class="score"></span>
+                    </div>
+                    <div class="breakdown-item">
+                        <span class="label">간성뇌증:</span>
+                        <span id="encephalopathyScore" class="score"></span>
+                    </div>
+                </div>
+                
+                <div class="total-score">
+                    <span class="total-label">총 점수:</span>
+                    <span id="totalScore" class="total-value"></span>
+                </div>
+                
+                <div id="classification" class="classification">
+                    <div class="class-info">
+                        <div id="className" class="class-name"></div>
+                        <div id="classDescription" class="class-description"></div>
+                    </div>
+                </div>
+                
+                <div class="prognosis">
+                    <h3>예후 정보</h3>
+                    <div id="prognosisInfo" class="prognosis-content"></div>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <div class="info-section">
+                <h3>Child-Pugh Classification 정보</h3>
+                <div class="info-grid">
+                    <div class="info-card">
+                        <h4>Class A (5-6점)</h4>
+                        <p>간 기능 양호<br>기대수명: 15-20년<br>수술 사망률: ~10%</p>
+                    </div>
+                    <div class="info-card">
+                        <h4>Class B (7-9점)</h4>
+                        <p>중등도 간 기능 장애<br>간이식 평가 대상<br>수술 사망률: ~30%</p>
+                    </div>
+                    <div class="info-card">
+                        <h4>Class C (10-15점)</h4>
+                        <p>심한 간 기능 장애<br>기대수명: 1-3년<br>수술 사망률: 70-80%</p>
+                    </div>
+                </div>
+            </div>
+            <p class="disclaimer">
+                ※ 이 계산기는 의료진의 판단을 보조하는 도구입니다. 정확한 진단과 치료는 반드시 의료진과 상담하시기 바랍니다.
+            </p>
+        </footer>
+    </div>
+
+    <!-- PWA 설치 버튼 -->
+    <div id="installPrompt" class="install-prompt" style="display: none;">
+        <div class="install-content">
+            <p>앱으로 설치하여 더 편리하게 사용하세요!</p>
+            <button id="installBtn" class="install-btn">설치하기</button>
+            <button id="dismissBtn" class="dismiss-btn">나중에</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html> 

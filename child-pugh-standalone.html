@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏥 Child-Pugh Calculator</title>
+    <meta name="description" content="간경변증 환자의 중증도를 평가하는 Child-Pugh Score 계산기">
+    <meta name="keywords" content="Child-Pugh, 간경변증, 계산기, 의료, 진단">
+    <meta name="author" content="Medical Calculator">
+    
+    <!-- PWA 메타태그 -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="theme-color" content="#667eea">
+    
+    <style>
+        /* CSS 스타일 (압축) */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif; line-height: 1.6; color: #333; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; -webkit-tap-highlight-color: transparent; }
+        .container { max-width: 800px; margin: 20px auto; padding: 20px; background: white; border-radius: 15px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+        header { text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 3px solid #f0f0f0; }
+        h1 { color: #2c3e50; font-size: 2.2rem; font-weight: 700; margin-bottom: 10px; }
+        .subtitle { color: #7f8c8d; font-size: 1.1rem; }
+        .calculator-form { margin-bottom: 30px; }
+        .input-section { background: #f8f9fa; padding: 25px; border-radius: 10px; margin-bottom: 20px; }
+        .input-section h2 { color: #2c3e50; font-size: 1.4rem; margin-bottom: 20px; font-weight: 600; }
+        .input-group { margin-bottom: 20px; }
+        label { display: block; font-weight: 600; color: #34495e; margin-bottom: 8px; font-size: 1rem; }
+        input[type="number"], select { width: 100%; padding: 12px 15px; border: 2px solid #e1e8ed; border-radius: 8px; font-size: 1rem; transition: all 0.3s ease; background: white; }
+        input[type="number"]:focus, select:focus { outline: none; border-color: #667eea; box-shadow: 0 0 0 3px rgba(102,126,234,0.1); }
+        .reference { margin-top: 5px; font-size: 0.85rem; color: #7f8c8d; font-style: italic; }
+        .calculate-btn { width: 100%; padding: 15px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 10px; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(102,126,234,0.3); }
+        .calculate-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(102,126,234,0.4); }
+        .calculate-btn:active { transform: translateY(0); }
+        .result-section { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; padding: 25px; border-radius: 15px; margin-bottom: 30px; animation: slideIn 0.5s ease-out; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .result-section h2 { font-size: 1.5rem; margin-bottom: 20px; text-align: center; }
+        .score-breakdown { background: rgba(255,255,255,0.1); padding: 20px; border-radius: 10px; margin-bottom: 20px; backdrop-filter: blur(10px); }
+        .breakdown-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.2); }
+        .breakdown-item:last-child { border-bottom: none; }
+        .score { background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 20px; font-weight: 600; }
+        .total-score { text-align: center; font-size: 1.3rem; margin-bottom: 20px; }
+        .total-value { background: rgba(255,255,255,0.2); padding: 8px 20px; border-radius: 25px; font-weight: 700; font-size: 1.5rem; margin-left: 10px; }
+        .classification { text-align: center; padding: 20px; border-radius: 10px; margin-bottom: 20px; }
+        .class-name { font-size: 1.4rem; font-weight: 700; margin-bottom: 10px; }
+        .class-description { font-size: 1.1rem; font-weight: 400; }
+        .class-a { background: linear-gradient(135deg, #56ab2f 0%, #a8e6cf 100%); }
+        .class-b { background: linear-gradient(135deg, #ff9500 0%, #ffcc02 100%); }
+        .class-c { background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%); }
+        .prognosis { background: rgba(255,255,255,0.1); padding: 20px; border-radius: 10px; margin-bottom: 20px; backdrop-filter: blur(10px); }
+        .prognosis h3 { margin-bottom: 15px; font-size: 1.2rem; }
+        .prognosis-content { font-size: 0.95rem; line-height: 1.5; }
+        .prognosis-item { margin-bottom: 10px; }
+        .prognosis-details { margin-top: 15px; padding: 15px; background: rgba(255,255,255,0.1); border-radius: 8px; font-size: 0.9rem; }
+        .reset-btn { width: 100%; padding: 10px; background: #95a5a6; color: white; border: none; border-radius: 8px; font-size: 1rem; cursor: pointer; margin-top: 10px; }
+        .reset-btn:hover { background: #7f8c8d; }
+        @media (max-width: 768px) {
+            .container { margin: 10px; padding: 15px; }
+            h1 { font-size: 1.8rem; }
+            .input-section { padding: 20px; }
+            .breakdown-item { flex-direction: column; align-items: flex-start; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏥 Child-Pugh Calculator</h1>
+            <p class="subtitle">간경변증 중증도 평가 도구</p>
+        </header>
+
+        <div class="calculator-form">
+            <form id="childPughForm">
+                <div class="input-section">
+                    <h2>📋 임상 검사 결과 입력</h2>
+                    
+                    <div class="input-group">
+                        <label for="bilirubin">혈청 빌리루빈 (mg/dL)</label>
+                        <input type="number" id="bilirubin" step="0.1" min="0" placeholder="예: 1.5" required>
+                        <div class="reference">정상: &lt; 2.0, 중등도: 2.0-3.0, 고도: &gt; 3.0</div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="albumin">혈청 알부민 (g/dL)</label>
+                        <input type="number" id="albumin" step="0.1" min="0" placeholder="예: 3.5" required>
+                        <div class="reference">정상: &gt; 3.5, 중등도: 2.8-3.5, 저도: &lt; 2.8</div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="inr">INR (International Normalized Ratio)</label>
+                        <input type="number" id="inr" step="0.1" min="0" placeholder="예: 1.2" required>
+                        <div class="reference">정상: &lt; 1.7, 중등도: 1.7-2.3, 고도: &gt; 2.3</div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="ascites">복수 (Ascites)</label>
+                        <select id="ascites" required>
+                            <option value="">선택하세요</option>
+                            <option value="1">없음</option>
+                            <option value="2">경도 (약물로 조절 가능)</option>
+                            <option value="3">중등도-고도 (약물로 조절 어려움)</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="encephalopathy">간성뇌증 (Hepatic Encephalopathy)</label>
+                        <select id="encephalopathy" required>
+                            <option value="">선택하세요</option>
+                            <option value="1">없음</option>
+                            <option value="2">1-2단계 (경미한 혼돈)</option>
+                            <option value="3">3-4단계 (혼수상태)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button type="submit" class="calculate-btn">🧮 Child-Pugh Score 계산</button>
+                <button type="button" class="reset-btn" onclick="resetForm()">🔄 입력 초기화</button>
+            </form>
+        </div>
+
+        <div id="result" class="result-section" style="display: none;">
+            <h2>📊 Child-Pugh Score 결과</h2>
+            
+            <div class="score-breakdown">
+                <div class="breakdown-item">
+                    <span class="label">혈청 빌리루빈</span>
+                    <span class="score" id="bilirubinScore">-</span>
+                </div>
+                <div class="breakdown-item">
+                    <span class="label">혈청 알부민</span>
+                    <span class="score" id="albuminScore">-</span>
+                </div>
+                <div class="breakdown-item">
+                    <span class="label">INR</span>
+                    <span class="score" id="inrScore">-</span>
+                </div>
+                <div class="breakdown-item">
+                    <span class="label">복수</span>
+                    <span class="score" id="ascitesScore">-</span>
+                </div>
+                <div class="breakdown-item">
+                    <span class="label">간성뇌증</span>
+                    <span class="score" id="encephalopathyScore">-</span>
+                </div>
+            </div>
+
+            <div class="total-score">
+                <span class="total-label">총점:</span>
+                <span class="total-value" id="totalScore">-</span>
+            </div>
+
+            <div id="classification" class="classification">
+                <div class="class-name" id="className">-</div>
+                <div class="class-description" id="classDescription">-</div>
+            </div>
+
+            <div class="prognosis">
+                <h3>📈 예후 정보</h3>
+                <div class="prognosis-content" id="prognosisInfo">-</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Child-Pugh Score 계산기
+        class ChildPughCalculator {
+            constructor() {
+                this.form = document.getElementById('childPughForm');
+                this.resultSection = document.getElementById('result');
+                this.init();
+            }
+
+            init() {
+                this.form.addEventListener('submit', this.handleSubmit.bind(this));
+                this.addInputValidation();
+            }
+
+            addInputValidation() {
+                const inputs = this.form.querySelectorAll('input[type="number"]');
+                inputs.forEach(input => {
+                    input.addEventListener('input', () => this.validateInput(input));
+                });
+
+                // 응고 지표 종류(INR/PT)가 바뀌면 허용 범위도 달라지므로 다시 검사
+                const coagType = document.getElementById('inrType');
+                if (coagType) {
+                    coagType.addEventListener('change', () => {
+                        this.validateInput(document.getElementById('inr'));
+                    });
+                }
+            }
+
+            getCoagulationType() {
+                const coagType = document.getElementById('inrType');
+                return coagType ? coagType.value : 'inr';
+            }
+
+            // 값을 임의로 잘라내지 않고, 범위를 벗어나면 단위 확인을 요구한다
+            getRangeError(id, value) {
+                if (Number.isNaN(value)) return '';
+                if (value < 0) return '0 이상의 값을 입력하세요.';
+
+                if (id === 'bilirubin' && value > 50) {
+                    return '빌리루빈은 mg/dL 단위로 입력하세요 (0–50). µmol/L 값은 17.1로 나누어 입력하세요.';
+                }
+                if (id === 'albumin' && value > 7) {
+                    return '알부민은 g/dL 단위로 입력하세요 (0–7). g/L 값은 10으로 나누어 입력하세요.';
+                }
+                if (id === 'inr') {
+                    if (this.getCoagulationType() === 'pt') {
+                        if (value > 60) {
+                            return 'PT는 정상 대조군 대비 연장된 시간(초)을 입력하세요 (0–60). 측정된 PT 값 자체가 아닙니다.';
+                        }
+                    } else if (value > 10) {
+                        return 'INR은 0–10 범위로 입력하세요.';
+                    }
+                }
+                return '';
+            }
+
+            validateInput(input) {
+                input.setCustomValidity(this.getRangeError(input.id, parseFloat(input.value)));
+            }
+
+            handleSubmit(event) {
+                event.preventDefault();
+
+                // 단축키(dispatchEvent)로 제출되면 브라우저 기본 검증이 생략되므로 직접 검사
+                this.form.querySelectorAll('input[type="number"]').forEach(input => this.validateInput(input));
+                if (!this.form.reportValidity()) return;
+
+                const formData = this.getFormData();
+                if (!showErrors(validateFormData(formData))) return;
+
+                const scores = this.calculateScores(formData);
+                const totalScore = this.calculateTotalScore(scores);
+                const classification = this.getClassification(totalScore);
+
+                this.displayResults(scores, totalScore, classification, formData.coagulationType);
+                this.scrollToResults();
+            }
+
+            // select(id) 또는 radio(name) 어느 쪽으로 구성된 화면이든 값을 읽는다
+            getChoiceValue(name) {
+                const select = document.getElementById(name);
+                if (select) return parseInt(select.value, 10);
+                const checked = this.form.querySelector(`input[name="${name}"]:checked`);
+                return checked ? parseInt(checked.value, 10) : NaN;
+            }
+
+            getFormData() {
+                return {
+                    bilirubin: parseFloat(document.getElementById('bilirubin').value),
+                    albumin: parseFloat(document.getElementById('albumin').value),
+                    inr: parseFloat(document.getElementById('inr').value),
+                    coagulationType: this.getCoagulationType(),
+                    ascites: this.getChoiceValue('ascites'),
+                    encephalopathy: this.getChoiceValue('encephalopathy')
+                };
+            }
+
+            calculateScores(data) {
+                return {
+                    bilirubin: this.calculateBilirubinScore(data.bilirubin),
+                    albumin: this.calculateAlbuminScore(data.albumin),
+                    inr: data.coagulationType === 'pt'
+                        ? this.calculatePtScore(data.inr)
+                        : this.calculateInrScore(data.inr),
+                    ascites: data.ascites,
+                    encephalopathy: data.encephalopathy
+                };
+            }
+
+            calculateBilirubinScore(value) {
+                // < 2 (1점), 2-3 (2점), > 3 (3점)
+                if (value < 2) return 1;
+                if (value <= 3) return 2;
+                return 3;
+            }
+
+            calculateAlbuminScore(value) {
+                // > 3.5 (1점), 2.8-3.5 (2점), < 2.8 (3점)
+                if (value > 3.5) return 1;
+                if (value >= 2.8) return 2;
+                return 3;
+            }
+
+            calculateInrScore(value) {
+                // < 1.7 (1점), 1.7-2.3 (2점), > 2.3 (3점) — 2.3은 2점, 2.3 초과부터 3점
+                if (value < 1.7) return 1;
+                if (value <= 2.3) return 2;
+                return 3;
+            }
+
+            calculatePtScore(prolongationSeconds) {
+                // 정상 대조군 대비 PT 연장: < 4초 (1점), 4-6초 (2점), > 6초 (3점)
+                if (prolongationSeconds < 4) return 1;
+                if (prolongationSeconds <= 6) return 2;
+                return 3;
+            }
+
+            calculateTotalScore(scores) {
+                return scores.bilirubin + scores.albumin + scores.inr + scores.ascites + scores.encephalopathy;
+            }
+
+            getClassification(totalScore) {
+                if (totalScore <= 6) {
+                    return {
+                        class: 'A',
+                        name: 'Child-Pugh Class A',
+                        description: '간 기능 양호',
+                        cssClass: 'class-a',
+                        prognosis: {
+                            lifeExpectancy: '15-20년',
+                            surgicalMortality: '약 10%',
+                            oneYearMortality: '0%',
+                            recommendation: '선택적 수술 가능',
+                            details: 'Class A 환자는 일반적으로 안전한 수술 후보자로 간주됩니다. 정기적인 추적 관찰과 함께 대부분의 치료가 가능합니다.'
+                        }
+                    };
+                } else if (totalScore <= 9) {
+                    return {
+                        class: 'B',
+                        name: 'Child-Pugh Class B',
+                        description: '중등도 간 기능 장애',
+                        cssClass: 'class-b',
+                        prognosis: {
+                            lifeExpectancy: '가변적',
+                            surgicalMortality: '약 30%',
+                            oneYearMortality: '20%',
+                            recommendation: '간이식 평가 대상',
+                            details: 'Class B 환자는 의학적 최적화 후 수술이 가능하지만 위험도가 증가합니다. 간이식 평가를 고려해야 합니다.'
+                        }
+                    };
+                } else {
+                    return {
+                        class: 'C',
+                        name: 'Child-Pugh Class C',
+                        description: '심한 간 기능 장애',
+                        cssClass: 'class-c',
+                        prognosis: {
+                            lifeExpectancy: '1-3년',
+                            surgicalMortality: '70-80%',
+                            oneYearMortality: '55%',
+                            recommendation: '선택적 수술 금기',
+                            details: 'Class C 환자는 선택적 수술이 금기입니다. 즉시 간이식 평가와 집중적인 의학적 관리가 필요합니다.'
+                        }
+                    };
+                }
+            }
+
+            getPrognosisHtml(prognosis) {
+                return `
+                    <div class="prognosis-item">
+                        <strong>기대 수명:</strong> ${prognosis.lifeExpectancy}
+                    </div>
+                    <div class="prognosis-item">
+                        <strong>복부 수술 사망률:</strong> ${prognosis.surgicalMortality}
+                    </div>
+                    <div class="prognosis-item">
+                        <strong>1년 사망률:</strong> ${prognosis.oneYearMortality}
+                    </div>
+                    <div class="prognosis-item">
+                        <strong>권고사항:</strong> ${prognosis.recommendation}
+                    </div>
+                    <div class="prognosis-details">
+                        <p>${prognosis.details}</p>
+                    </div>
+                `;
+            }
+
+            displayResults(scores, totalScore, classification, coagulationType) {
+                if (document.getElementById('bilirubinScore')) {
+                    // 항목별 결과 칸이 미리 있는 화면 (index.html, standalone)
+                    document.getElementById('bilirubinScore').textContent = `${scores.bilirubin}점`;
+                    document.getElementById('albuminScore').textContent = `${scores.albumin}점`;
+                    document.getElementById('inrScore').textContent = `${scores.inr}점`;
+                    document.getElementById('ascitesScore').textContent = `${scores.ascites}점`;
+                    document.getElementById('encephalopathyScore').textContent = `${scores.encephalopathy}점`;
+
+                    document.getElementById('totalScore').textContent = `${totalScore}점`;
+
+                    const classificationDiv = document.getElementById('classification');
+                    classificationDiv.className = `classification ${classification.cssClass}`;
+
+                    document.getElementById('className').textContent = classification.name;
+                    document.getElementById('classDescription').textContent = classification.description;
+
+                    document.getElementById('prognosisInfo').innerHTML = this.getPrognosisHtml(classification.prognosis);
+                } else {
+                    // 결과 컨테이너만 있는 화면 (android-webview-app.html)
+                    const coagLabel = coagulationType === 'pt' ? 'PT 연장' : 'INR';
+                    const items = [
+                        ['빌리루빈', scores.bilirubin],
+                        ['알부민', scores.albumin],
+                        [coagLabel, scores.inr],
+                        ['복수', scores.ascites],
+                        ['간성뇌증', scores.encephalopathy]
+                    ];
+                    document.getElementById('scoreDisplay').innerHTML = `
+                        <div class="score-breakdown">
+                            ${items.map(([label, score]) => `
+                                <div class="breakdown-item">
+                                    <span class="label">${label}:</span>
+                                    <span class="score">${score}점</span>
+                                </div>`).join('')}
+                        </div>
+                        <div class="total-score">
+                            <span class="total-label">총 점수:</span>
+                            <span class="total-value">${totalScore}점</span>
+                        </div>
+                    `;
+                    document.getElementById('classDisplay').innerHTML = `
+                        <div class="classification ${classification.cssClass}">
+                            <div class="class-info">
+                                <div class="class-name">${classification.name}</div>
+                                <div class="class-description">${classification.description}</div>
+                            </div>
+                        </div>
+                    `;
+                    document.getElementById('prognosisDisplay').innerHTML = `
+                        <div class="prognosis">
+                            <h3>예후 정보</h3>
+                            <div class="prognosis-content">${this.getPrognosisHtml(classification.prognosis)}</div>
+                        </div>
+                    `;
+                }
+
+                // 결과 섹션 표시
+                this.resultSection.style.display = 'block';
+
+                // 애니메이션 효과
+                this.resultSection.classList.remove('slideIn');
+                setTimeout(() => {
+                    this.resultSection.classList.add('slideIn');
+                }, 10);
+            }
+
+            scrollToResults() {
+                setTimeout(() => {
+                    this.resultSection.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }, 100);
+            }
+
+            // 결과 초기화
+            resetResults() {
+                this.resultSection.style.display = 'none';
+                this.form.reset();
+                this.form.querySelectorAll('input[type="number"]').forEach(input => input.setCustomValidity(''));
+            }
+        }
+
+        // 데이터 유효성 검사 (최종 방어선: NaN이 계산에 들어가면 조용히 3점이 되므로 차단)
+        function validateFormData(data) {
+            const errors = [];
+
+            if (Number.isNaN(data.bilirubin) || data.bilirubin < 0) {
+                errors.push('빌리루빈 값이 유효하지 않습니다.');
+            }
+
+            if (Number.isNaN(data.albumin) || data.albumin < 0) {
+                errors.push('알부민 값이 유효하지 않습니다.');
+            }
+
+            if (Number.isNaN(data.inr) || data.inr < 0) {
+                errors.push(data.coagulationType === 'pt' ? 'PT 연장 값이 유효하지 않습니다.' : 'INR 값이 유효하지 않습니다.');
+            }
+
+            if (![1, 2, 3].includes(data.ascites)) {
+                errors.push('복수 상태를 선택해주세요.');
+            }
+
+            if (![1, 2, 3].includes(data.encephalopathy)) {
+                errors.push('간성뇌증 상태를 선택해주세요.');
+            }
+
+            return errors;
+        }
+
+        // 에러 표시 함수
+        function showErrors(errors) {
+            if (errors.length > 0) {
+                alert('입력 오류:\n' + errors.join('\n'));
+                return false;
+            }
+            return true;
+        }
+
+        // 계산기 인스턴스 (Esc 초기화에서 재사용)
+        let calculator = null;
+
+        function resetForm() {
+            if (calculator) calculator.resetResults();
+        }
+
+        // 앱 초기화
+        document.addEventListener('DOMContentLoaded', () => {
+            calculator = new ChildPughCalculator();
+
+            // 키보드 단축키
+            document.addEventListener('keydown', (e) => {
+                if (e.ctrlKey && e.key === 'Enter') {
+                    e.preventDefault();
+                    document.getElementById('childPughForm').dispatchEvent(new Event('submit', { cancelable: true }));
+                } else if (e.key === 'Escape') {
+                    e.preventDefault();
+                    resetForm();
+                }
+            });
+        });
+    </script>
+</body>
+</html> 

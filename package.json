@@ -1,0 +1,17 @@
+{
+  "name": "child-pugh",
+  "version": "1.0.0",
+  "description": "간경변증 환자의 중증도를 평가하는 Child-Pugh Score 계산기입니다. 웹 브라우저와 안드로이드 스마트폰에서 사용할 수 있습니다.",
+  "main": "script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@capacitor/android": "^7.3.0",
+    "@capacitor/cli": "^6.2.1",
+    "@capacitor/core": "^7.3.0"
+  }
+}

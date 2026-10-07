@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Child-Pugh Score 계산기</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="description" content="간경화 환자의 간 기능 평가를 위한 Child-Pugh Score 계산기">
+    <meta name="keywords" content="Child-Pugh, 간경화, 간기능, 의료, 계산기">
+    <meta name="author" content="Child-Pugh Calculator">
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#667eea">
+    <meta name="msapplication-TileColor" content="#667eea">
+    <meta name="msapplication-TileImage" content="/icons/icon-144x144.png">
+    
+    <!-- Apple Touch Icon -->
+    <link rel="apple-touch-icon" href="/icons/icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/icons/icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="96x96" href="/icons/icon-96x96.png">
+    <link rel="apple-touch-icon" sizes="128x128" href="/icons/icon-128x128.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/icons/icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="/icons/icon-192x192.png">
+    <link rel="apple-touch-icon" sizes="384x384" href="/icons/icon-384x384.png">
+    <link rel="apple-touch-icon" sizes="512x512" href="/icons/icon-512x512.png">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-16x16.png">
+    
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/manifest.json">
+    
+    <!-- iOS Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Child-Pugh">
+    
+    <!-- Windows Meta Tags -->
+    <meta name="msapplication-starturl" content="/">
+    <meta name="msapplication-config" content="/browserconfig.xml">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .install-button {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9em;
+            display: none;
+            transition: all 0.3s ease;
+        }
+
+        .install-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .header h1 {
+            font-size: 2.2em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .parameter-group {
+            margin-bottom: 25px;
+            padding: 20px;
+            border: 2px solid #ecf0f1;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .parameter-group:hover {
+            border-color: #3498db;
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.1);
+        }
+
+        .parameter-label {
+            font-weight: bold;
+            font-size: 1.1em;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border: 2px solid #ecf0f1;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .radio-option:hover {
+            background-color: #f8f9fa;
+            border-color: #3498db;
+        }
+
+        .radio-option input[type="radio"] {
+            margin-right: 12px;
+            transform: scale(1.2);
+        }
+
+        .radio-option.selected {
+            background-color: #e3f2fd;
+            border-color: #2196f3;
+            color: #1976d2;
+        }
+
+        .result-section {
+            margin-top: 30px;
+            padding: 25px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .calculate-btn {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1em;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+        }
+
+        .result-display {
+            font-size: 1.3em;
+            margin: 20px 0;
+        }
+
+        .score-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin: 10px 0;
+        }
+
+        .class-a {
+            color: #28a745;
+        }
+
+        .class-b {
+            color: #ffc107;
+        }
+
+        .class-c {
+            color: #dc3545;
+        }
+
+        .interpretation {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: left;
+        }
+
+        .interpretation h3 {
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .interpretation ul {
+            margin-left: 20px;
+        }
+
+        .interpretation li {
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+
+        .reset-btn {
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 20px;
+            cursor: pointer;
+            margin-left: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .reset-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 10px rgba(108, 117, 125, 0.4);
+        }
+
+        .info-section {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            border-left: 5px solid #007bff;
+        }
+
+        .info-section h3 {
+            color: #007bff;
+            margin-bottom: 15px;
+        }
+
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .info-table th,
+        .info-table td {
+            padding: 10px;
+            border: 1px solid #dee2e6;
+            text-align: center;
+        }
+
+        .info-table th {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .info-table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        .pwa-status {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 25px;
+            font-size: 0.9em;
+            display: none;
+            z-index: 1000;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                margin: 10px;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .radio-group {
+                gap: 8px;
+            }
+
+            .radio-option {
+                padding: 10px;
+            }
+
+            .install-button {
+                position: relative;
+                top: auto;
+                right: auto;
+                margin-top: 15px;
+                display: inline-block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <button id="installButton" class="install-button">📱 앱 설치</button>
+            <h1>Child-Pugh Score 계산기</h1>
+            <p>간경화 환자의 간 기능 평가를 위한 임상 도구</p>
+        </div>
+
+        <div class="content">
+            <form id="childPughForm">
+                <!-- Total Bilirubin -->
+                <div class="parameter-group">
+                    <label class="parameter-label">Total Bilirubin (mg/dL)</label>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="bilirubin" value="1">
+                            < 2.0 mg/dL (1점)
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="bilirubin" value="2">
+                            2.0 - 3.0 mg/dL (2점)
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="bilirubin" value="3">
+                            > 3.0 mg/dL (3점)
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Serum Albumin -->
+                <div class="parameter-group">
+                    <label class="parameter-label">Serum Albumin (g/dL)</label>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="albumin" value="1">
+                            > 3.5 g/dL (1점)
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="albumin" value="2">
+                            2.8 - 3.5 g/dL (2점)
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="albumin" value="3">
+                            < 2.8 g/dL (3점)
+                        </label>
+                    </div>
+                </div>
+
+                <!-- PT INR -->
+                <div class="parameter-group">
+                    <label class="parameter-label">PT INR</label>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="inr" value="1">
+                            < 1.7 (1점)
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="inr" value="2">
+                            1.71 - 2.30 (2점)
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="inr" value="3">
+                            > 2.30 (3점)
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Ascites -->
+                <div class="parameter-group">
+                    <label class="parameter-label">복수 (Ascites)</label>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="ascites" value="1">
+                            없음 (1점)
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="ascites" value="2">
+                            경도 (약물로 조절 가능) (2점)
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="ascites" value="3">
+                            중등도-심도 (조절 어려움) (3점)
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Hepatic Encephalopathy -->
+                <div class="parameter-group">
+                    <label class="parameter-label">간성뇌증 (Hepatic Encephalopathy)</label>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="encephalopathy" value="1">
+                            없음 (1점)
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="encephalopathy" value="2">
+                            Grade I-II (경도-중등도) (2점)
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="encephalopathy" value="3">
+                            Grade III-IV (심도) (3점)
+                        </label>
+                    </div>
+                </div>
+            </form>
+
+            <div class="result-section">
+                <button type="button" class="calculate-btn" onclick="calculateScore()">점수 계산하기</button>
+                <button type="button" class="reset-btn" onclick="resetForm()">초기화</button>
+                
+                <div id="result" style="display: none;">
+                    <div class="result-display">
+                        <div>Child-Pugh Score:</div>
+                        <div class="score-value" id="scoreValue">-</div>
+                        <div id="classification">-</div>
+                    </div>
+                    
+                    <div id="interpretation" class="interpretation">
+                        <!-- 해석 결과가 여기에 표시됩니다 -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- 정보 섹션 -->
+            <div class="info-section">
+                <h3>Child-Pugh 분류 기준</h3>
+                <table class="info-table">
+                    <thead>
+                        <tr>
+                            <th>등급</th>
+                            <th>총점</th>
+                            <th>간 기능 상태</th>
+                            <th>기대 생존기간</th>
+                            <th>수술 사망률</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Class A</strong></td>
+                            <td>5-6점</td>
+                            <td>양호</td>
+                            <td>15-20년</td>
+                            <td>10%</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Class B</strong></td>
+                            <td>7-9점</td>
+                            <td>중등도 저하</td>
+                            <td>-</td>
+                            <td>30%</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Class C</strong></td>
+                            <td>10-15점</td>
+                            <td>심각한 저하</td>
+                            <td>1-3년</td>
+                            <td>70-80%</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <h3 style="margin-top: 20px;">임상적 의미</h3>
+                <ul>
+                    <li><strong>Class A:</strong> 선택적 수술 안전, 예후 양호</li>
+                    <li><strong>Class B:</strong> 의학적 최적화 후 수술 가능, 증가된 위험</li>
+                    <li><strong>Class C:</strong> 선택적 수술 금기, 간 이식 고려</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div id="pwaStatus" class="pwa-status">오프라인에서도 사용 가능</div>
+
+    <script>
+        // PWA 설치 프롬프트 처리
+        let deferredPrompt;
+        const installButton = document.getElementById('installButton');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            installButton.style.display = 'block';
+        });
+
+        installButton.addEventListener('click', (e) => {
+            installButton.style.display = 'none';
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then((choiceResult) => {
+                if (choiceResult.outcome === 'accepted') {
+                    console.log('사용자가 PWA 설치를 수락했습니다');
+                } else {
+                    console.log('사용자가 PWA 설치를 거부했습니다');
+                }
+                deferredPrompt = null;
+            });
+        });
+
+        // 서비스 워커 등록
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(function(registration) {
+                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                        document.getElementById('pwaStatus').style.display = 'block';
+                        setTimeout(() => {
+                            document.getElementById('pwaStatus').style.display = 'none';
+                        }, 3000);
+                    }, function(err) {
+                        console.log('ServiceWorker registration failed: ', err);
+                    });
+            });
+        }
+
+        // 라디오 버튼 선택 시 시각적 효과
+        document.addEventListener('DOMContentLoaded', function() {
+            const radioOptions = document.querySelectorAll('.radio-option');
+            
+            radioOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    const input = this.querySelector('input[type="radio"]');
+                    const name = input.name;
+                    
+                    // 같은 그룹의 다른 옵션들에서 selected 클래스 제거
+                    document.querySelectorAll(`input[name="${name}"]`).forEach(radio => {
+                        radio.closest('.radio-option').classList.remove('selected');
+                    });
+                    
+                    // 현재 옵션에 selected 클래스 추가
+                    this.classList.add('selected');
+                    input.checked = true;
+                });
+            });
+        });
+
+        function calculateScore() {
+            const form = document.getElementById('childPughForm');
+            const formData = new FormData(form);
+            
+            // 모든 필드가 선택되었는지 확인
+            const requiredFields = ['bilirubin', 'albumin', 'inr', 'ascites', 'encephalopathy'];
+            const missingFields = requiredFields.filter(field => !formData.get(field));
+            
+            if (missingFields.length > 0) {
+                alert('모든 항목을 선택해주세요.');
+                return;
+            }
+            
+            // 점수 계산
+            let totalScore = 0;
+            requiredFields.forEach(field => {
+                totalScore += parseInt(formData.get(field));
+            });
+            
+            // 분류 결정
+            let classification, classStyle, interpretation;
+            
+            if (totalScore >= 5 && totalScore <= 6) {
+                classification = 'Child-Pugh Class A';
+                classStyle = 'class-a';
+                interpretation = getClassAInterpretation();
+            } else if (totalScore >= 7 && totalScore <= 9) {
+                classification = 'Child-Pugh Class B';
+                classStyle = 'class-b';
+                interpretation = getClassBInterpretation();
+            } else if (totalScore >= 10 && totalScore <= 15) {
+                classification = 'Child-Pugh Class C';
+                classStyle = 'class-c';
+                interpretation = getClassCInterpretation();
+            }
+            
+            // 결과 표시
+            document.getElementById('scoreValue').textContent = totalScore;
+            document.getElementById('scoreValue').className = `score-value ${classStyle}`;
+            document.getElementById('classification').innerHTML = `<span class="${classStyle}"><strong>${classification}</strong></span>`;
+            document.getElementById('interpretation').innerHTML = interpretation;
+            document.getElementById('result').style.display = 'block';
+            
+            // 결과 섹션으로 스크롤
+            document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function getClassAInterpretation() {
+            return `
+                <div style="background-color: #d4edda; border: 1px solid #c3e6cb; color: #155724;">
+                    <h3>Child-Pugh Class A (양호한 간 기능)</h3>
+                    <ul>
+                        <li><strong>간 기능:</strong> 양호한 상태</li>
+                        <li><strong>기대 생존기간:</strong> 15-20년</li>
+                        <li><strong>수술 위험도:</strong> 낮음 (사망률 약 10%)</li>
+                        <li><strong>치료 방침:</strong> 선택적 수술 안전, 정기적인 추적 관찰</li>
+                        <li><strong>예후:</strong> 우수함</li>
+                    </ul>
+                </div>
+            `;
+        }
+
+        function getClassBInterpretation() {
+            return `
+                <div style="background-color: #fff3cd; border: 1px solid #ffeaa7; color: #856404;">
+                    <h3>Child-Pugh Class B (중등도 간 기능 저하)</h3>
+                    <ul>
+                        <li><strong>간 기능:</strong> 중등도로 저하된 상태</li>
+                        <li><strong>수술 위험도:</strong> 중등도 (사망률 약 30%)</li>
+                        <li><strong>치료 방침:</strong> 의학적 최적화 후 수술 가능</li>
+                        <li><strong>주의사항:</strong> 간 이식 평가 고려</li>
+                        <li><strong>관리:</strong> 적극적인 내과적 치료 필요</li>
+                    </ul>
+                </div>
+            `;
+        }
+
+        function getClassCInterpretation() {
+            return `
+                <div style="background-color: #f8d7da; border: 1px solid #f5c6cb; color: #721c24;">
+                    <h3>Child-Pugh Class C (심각한 간 기능 저하)</h3>
+                    <ul>
+                        <li><strong>간 기능:</strong> 심각하게 저하된 상태</li>
+                        <li><strong>기대 생존기간:</strong> 1-3년</li>
+                        <li><strong>수술 위험도:</strong> 매우 높음 (사망률 70-80%)</li>
+                        <li><strong>치료 방침:</strong> 선택적 수술 금기</li>
+                        <li><strong>권장사항:</strong> 간 이식 적극 고려</li>
+                        <li><strong>관리:</strong> 집중적인 내과적 치료 및 합병증 관리</li>
+                    </ul>
+                </div>
+            `;
+        }
+
+        function resetForm() {
+            document.getElementById('childPughForm').reset();
+            document.getElementById('result').style.display = 'none';
+            
+            // 모든 selected 클래스 제거
+            document.querySelectorAll('.radio-option.selected').forEach(option => {
+                option.classList.remove('selected');
+            });
+        }
+    </script>
+</body>
+</html> 

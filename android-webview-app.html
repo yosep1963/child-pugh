@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Child-Pugh Calculator</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Android WebView 최적화 */
+        body {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            overscroll-behavior: none;
+        }
+        
+        /* 상단 상태바 공간 확보 */
+        .header {
+            padding-top: env(safe-area-inset-top, 20px);
+        }
+        
+        /* 전체화면 모드 */
+        html, body {
+            height: 100vh;
+            overflow-x: hidden;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏥 Child-Pugh Calculator</h1>
+            <p class="subtitle">간경변증 중증도 평가 도구</p>
+        </div>
+
+        <div class="calculator-card">
+            <form id="childPughForm">
+                <!-- 혈청 빌리루빈 -->
+                <div class="input-group">
+                    <label for="bilirubin">혈청 빌리루빈 (mg/dL)</label>
+                    <input type="number" id="bilirubin" step="0.1" min="0" placeholder="예: 1.5" required>
+                    <div class="hint">정상: &lt;2.0, 경도상승: 2.0-3.0, 고도상승: &gt;3.0</div>
+                </div>
+
+                <!-- 혈청 알부민 -->
+                <div class="input-group">
+                    <label for="albumin">혈청 알부민 (g/dL)</label>
+                    <input type="number" id="albumin" step="0.1" min="0" placeholder="예: 3.5" required>
+                    <div class="hint">정상: &gt;3.5, 경도감소: 2.8-3.5, 저도감소: &lt;2.8</div>
+                </div>
+
+                <!-- INR/프로트롬빈 시간 -->
+                <div class="input-group">
+                    <label for="inr">INR 또는 프로트롬빈 시간(PT) 연장</label>
+                    <select id="inrType" onchange="updateINRPlaceholder()">
+                        <option value="inr">INR</option>
+                        <option value="pt">PT 연장 (정상 대조군 대비, 초)</option>
+                    </select>
+                    <input type="number" id="inr" step="0.1" min="0" placeholder="예: 1.2" required>
+                    <div class="hint" id="inrHint">&lt;1.7 (1점), 1.7-2.3 (2점), &gt;2.3 (3점)</div>
+                </div>
+
+                <!-- 복수 -->
+                <div class="input-group">
+                    <label>복수 (Ascites)</label>
+                    <div class="radio-group">
+                        <label class="radio-label">
+                            <input type="radio" name="ascites" value="1" required>
+                            <span class="radio-custom"></span>
+                            없음
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="ascites" value="2">
+                            <span class="radio-custom"></span>
+                            경도 (약물로 조절 가능)
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="ascites" value="3">
+                            <span class="radio-custom"></span>
+                            중등도-고도 (약물로 조절 어려움)
+                        </label>
+                    </div>
+                </div>
+
+                <!-- 간성뇌증 -->
+                <div class="input-group">
+                    <label>간성뇌증 (Hepatic Encephalopathy)</label>
+                    <div class="radio-group">
+                        <label class="radio-label">
+                            <input type="radio" name="encephalopathy" value="1" required>
+                            <span class="radio-custom"></span>
+                            없음
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="encephalopathy" value="2">
+                            <span class="radio-custom"></span>
+                            1-2단계 (경미한 혼돈)
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="encephalopathy" value="3">
+                            <span class="radio-custom"></span>
+                            3-4단계 (혼수상태)
+                        </label>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button type="submit" class="calculate-btn">🧮 계산하기</button>
+                    <button type="button" class="reset-btn" onclick="resetForm()">🔄 초기화</button>
+                </div>
+            </form>
+        </div>
+
+        <div id="result" class="result-card" style="display: none;">
+            <h2>📊 계산 결과</h2>
+            <div id="scoreDisplay" class="score-display"></div>
+            <div id="classDisplay" class="class-display"></div>
+            <div id="prognosisDisplay" class="prognosis-display"></div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // Android WebView 최적화
+        function updateINRPlaceholder() {
+            const inrType = document.getElementById('inrType').value;
+            const inrInput = document.getElementById('inr');
+            const inrHint = document.getElementById('inrHint');
+            
+            if (inrType === 'inr') {
+                inrInput.placeholder = '예: 1.2';
+                inrHint.textContent = '<1.7 (1점), 1.7-2.3 (2점), >2.3 (3점)';
+            } else {
+                inrInput.placeholder = '예: 3 (환자 PT − 대조군 PT)';
+                inrHint.textContent = '대조군 대비 연장: <4초 (1점), 4-6초 (2점), >6초 (3점)';
+            }
+        }
+
+        // 키보드 단축키(Ctrl+Enter 계산, Esc 초기화)와 resetForm()은 script.js에서 처리
+
+        // Android 뒤로가기 버튼 처리
+        if (typeof Android !== 'undefined') {
+            window.addEventListener('keydown', function(e) {
+                if (e.keyCode === 4) { // 뒤로가기 키
+                    e.preventDefault();
+                    if (confirm('앱을 종료하시겠습니까?')) {
+                        Android.finish();
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html> 

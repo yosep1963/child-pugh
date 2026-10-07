@@ -1,0 +1,541 @@
+/* 기본 설정 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Noto Sans KR', sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+/* 헤더 */
+header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 3px solid #f0f0f0;
+}
+
+h1 {
+    color: #2c3e50;
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    color: #7f8c8d;
+    font-size: 1.1rem;
+    font-weight: 400;
+}
+
+/* 폼 스타일 */
+.calculator-form {
+    margin-bottom: 30px;
+}
+
+.input-section {
+    background: #f8f9fa;
+    padding: 25px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.input-section h2 {
+    color: #2c3e50;
+    font-size: 1.4rem;
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+.input-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    font-weight: 600;
+    color: #34495e;
+    margin-bottom: 8px;
+    font-size: 1rem;
+}
+
+input[type="number"], select {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #e1e8ed;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+input[type="number"]:focus, select:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.reference {
+    margin-top: 5px;
+    font-size: 0.85rem;
+    color: #7f8c8d;
+    font-style: italic;
+}
+
+/* 계산 버튼 */
+.calculate-btn {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.calculate-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.calculate-btn:active {
+    transform: translateY(0);
+}
+
+/* 결과 섹션 */
+.result-section {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+    padding: 25px;
+    border-radius: 15px;
+    margin-bottom: 30px;
+    animation: slideIn 0.5s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.result-section h2 {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.score-breakdown {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    backdrop-filter: blur(10px);
+}
+
+.breakdown-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.breakdown-item:last-child {
+    border-bottom: none;
+}
+
+.label {
+    font-weight: 500;
+}
+
+.score {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-weight: 600;
+}
+
+.total-score {
+    text-align: center;
+    font-size: 1.3rem;
+    margin-bottom: 20px;
+}
+
+.total-label {
+    font-weight: 500;
+}
+
+.total-value {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 8px 20px;
+    border-radius: 25px;
+    font-weight: 700;
+    font-size: 1.5rem;
+    margin-left: 10px;
+}
+
+/* 분류 결과 */
+.classification {
+    background: rgba(255, 255, 255, 0.15);
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    margin-bottom: 20px;
+    backdrop-filter: blur(10px);
+}
+
+.class-name {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.class-description {
+    font-size: 1.1rem;
+    opacity: 0.9;
+}
+
+/* 등급별 색상 */
+.class-a {
+    background: linear-gradient(135deg, #4CAF50, #8BC34A);
+}
+
+.class-b {
+    background: linear-gradient(135deg, #FF9800, #FFC107);
+}
+
+.class-c {
+    background: linear-gradient(135deg, #F44336, #E91E63);
+}
+
+/* 예후 정보 */
+.prognosis {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    border-radius: 10px;
+    backdrop-filter: blur(10px);
+}
+
+.prognosis h3 {
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+}
+
+.prognosis-content {
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+/* 정보 섹션 */
+.info-section {
+    margin-bottom: 30px;
+}
+
+.info-section h3 {
+    color: #2c3e50;
+    font-size: 1.3rem;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.info-card {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+}
+
+.info-card h4 {
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.info-card p {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    opacity: 0.9;
+}
+
+/* 면책 조항 */
+.disclaimer {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    color: #6c757d;
+    text-align: center;
+    border-left: 4px solid #667eea;
+}
+
+/* PWA 설치 프롬프트 */
+.install-prompt {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: white;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    max-width: 350px;
+    width: 90%;
+    text-align: center;
+    animation: slideUp 0.5s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(100px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}
+
+.install-content p {
+    margin-bottom: 15px;
+    color: #2c3e50;
+    font-weight: 500;
+}
+
+.install-btn, .dismiss-btn {
+    padding: 10px 20px;
+    margin: 5px;
+    border: none;
+    border-radius: 25px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.install-btn {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+}
+
+.install-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.dismiss-btn {
+    background: #f8f9fa;
+    color: #6c757d;
+    border: 1px solid #e1e8ed;
+}
+
+.dismiss-btn:hover {
+    background: #e9ecef;
+}
+
+/* 터치 피드백 */
+.touch-active {
+    transform: scale(0.98);
+    opacity: 0.8;
+}
+
+/* 예후 정보 항목 스타일 */
+.prognosis-item {
+    margin-bottom: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.prognosis-item:last-of-type {
+    border-bottom: none;
+}
+
+.prognosis-details {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+/* 포커스 상태 스타일 */
+.input-group.focused label {
+    color: #667eea;
+    font-weight: 700;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .container {
+        margin: 10px;
+        padding: 15px;
+        border-radius: 10px;
+    }
+    
+    h1 {
+        font-size: 1.8rem;
+    }
+    
+    .subtitle {
+        font-size: 1rem;
+    }
+    
+    .input-section {
+        padding: 20px;
+    }
+    
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .breakdown-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+    
+    .total-score {
+        font-size: 1.1rem;
+    }
+    
+    .total-value {
+        font-size: 1.3rem;
+        margin-left: 0;
+        margin-top: 5px;
+        display: block;
+    }
+    
+    .install-prompt {
+        bottom: 10px;
+        left: 10px;
+        right: 10px;
+        transform: none;
+        width: auto;
+        max-width: none;
+    }
+}
+
+@media (max-width: 480px) {
+    h1 {
+        font-size: 1.6rem;
+    }
+    
+    .input-section {
+        padding: 15px;
+    }
+    
+    .class-name {
+        font-size: 1.5rem;
+    }
+    
+    .class-description {
+        font-size: 1rem;
+    }
+    
+    .install-prompt {
+        padding: 15px;
+    }
+    
+    .install-btn, .dismiss-btn {
+        display: block;
+        width: 100%;
+        margin: 5px 0;
+    }
+}
+
+/* PWA 지원을 위한 추가 스타일 */
+@media (display-mode: standalone) {
+    body {
+        user-select: none;
+        -webkit-user-select: none;
+    }
+    
+    .container {
+        margin-top: 10px;
+    }
+    
+    /* 설치 프롬프트 숨김 */
+    .install-prompt {
+        display: none !important;
+    }
+}
+
+/* 다크모드 지원 */
+@media (prefers-color-scheme: dark) {
+    .container {
+        background: #2c3e50;
+        color: #ecf0f1;
+    }
+    
+    .input-section {
+        background: #34495e;
+    }
+    
+    h1, .input-section h2, label {
+        color: #ecf0f1;
+    }
+    
+    input[type="number"], select {
+        background: #34495e;
+        color: #ecf0f1;
+        border-color: #4a5f7a;
+    }
+    
+    .disclaimer {
+        background: #34495e;
+        color: #bdc3c7;
+    }
+    
+    .install-prompt {
+        background: #34495e;
+        color: #ecf0f1;
+    }
+    
+    .install-content p {
+        color: #ecf0f1;
+    }
+    
+    .dismiss-btn {
+        background: #4a5f7a;
+        color: #ecf0f1;
+        border-color: #5a6f8a;
+    }
+    
+    .dismiss-btn:hover {
+        background: #5a6f8a;
+    }
+} 
